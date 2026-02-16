@@ -3,298 +3,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NIKHIL GOWTHAM | OMNIVERSE ARCHITECT</title>
+    <title>NIKHIL GOWTHAM | THE SENTIENT VOID</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Orbitron:wght@400;900&family=JetBrains+Mono:wght@100&display=swap" rel="stylesheet">
     
-    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Outfit:wght@100;300;600;900&family=JetBrains+Mono:wght@100;400&display=swap" rel="stylesheet">
-
     <style>
-        /* --- 1. CORE ARCHITECTURE --- */
         :root {
-            --gold: #dda15e;
-            --deep-black: #050505;
-            --neon-blue: #00f2ff;
-            --glass-white: rgba(255, 255, 255, 0.03);
-            --font-main: 'Outfit', sans-serif;
-            --font-mono: 'JetBrains Mono', monospace;
-            --font-display: 'Syncopate', sans-serif;
+            --neon: #dda15e;
+            --bg: #020202;
+            --ai-accent: #00f2ff;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
-        
-        body {
-            background: var(--deep-black);
-            color: #fff;
-            font-family: var(--font-main);
-            overflow-x: hidden;
-            background: radial-gradient(circle at center, #111 0%, #000 100%);
+        body { background: var(--bg); color: #fff; font-family: 'JetBrains Mono', monospace; overflow: hidden; }
+
+        /* --- 1. FUNNY AI CHAT INTERFACE --- */
+        #ai-orb-container {
+            position: fixed; bottom: 40px; right: 40px; z-index: 10000;
+            display: flex; flex-direction: column; align-items: flex-end;
         }
 
-        /* --- 2. ADVANCED CURSOR SYSTEM --- */
-        #cursor-follower {
-            position: fixed; width: 40px; height: 40px;
-            border: 1px solid var(--gold); border-radius: 50%;
-            pointer-events: none; z-index: 10000;
-            transition: transform 0.1s ease, width 0.3s, height 0.3s, background 0.3s;
+        #ai-orb {
+            width: 80px; height: 80px; border-radius: 50%;
+            background: radial-gradient(circle, var(--neon) 0%, transparent 70%);
+            box-shadow: 0 0 30px var(--neon);
+            margin-bottom: 15px; cursor: pointer; transition: 0.3s;
+            animation: pulse 2s infinite ease-in-out;
         }
 
-        #cursor-dot {
-            position: fixed; width: 4px; height: 4px;
-            background: #fff; border-radius: 50%;
-            pointer-events: none; z-index: 10001;
+        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } }
+
+        #chat-window {
+            width: 350px; background: rgba(0,0,0,0.9); border: 1px solid var(--neon);
+            display: none; flex-direction: column; backdrop-filter: blur(10px);
         }
 
-        /* --- 3. THE VOID (BACKGROUND ENGINE) --- */
-        #void-engine {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 0; pointer-events: none;
+        .chat-logs { height: 250px; overflow-y: auto; padding: 15px; font-size: 0.8rem; color: #ccc; }
+        .chat-input { background: #111; border: none; padding: 15px; color: var(--neon); border-top: 1px solid #333; width: 100%; outline: none; }
+
+        /* --- 2. MUSIC PLAYER WITH BEAT-VISUAL --- */
+        #music-panel {
+            position: fixed; top: 30px; left: 30px; z-index: 999;
+            background: rgba(255,255,255,0.02); padding: 15px; border: 1px solid rgba(255,255,255,0.1);
         }
 
-        /* --- 4. PRELOADER & HUD --- */
-        .hud-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            border: 20px solid rgba(221, 161, 94, 0.05);
-            pointer-events: none; z-index: 999;
+        .vis-bar { width: 5px; height: 20px; background: var(--neon); display: inline-block; margin-right: 2px; }
+
+        /* --- 3. THE 3D VOID --- */
+        #canvas-3d { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+
+        /* --- 4. HUD & TITLES --- */
+        .hud-main {
+            position: relative; z-index: 10; height: 100vh;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; pointer-events: none;
         }
 
-        .scanline {
-            width: 100%; height: 2px; background: rgba(255, 255, 255, 0.02);
-            position: fixed; z-index: 1000; pointer-events: none;
-            animation: scan 8s linear infinite;
-        }
+        .title { font-family: 'Orbitron', sans-serif; font-size: 7vw; letter-spacing: -5px; }
+        .subtitle { letter-spacing: 15px; font-size: 0.8rem; color: var(--neon); margin-top: 10px; }
 
-        @keyframes scan { from { top: -10%; } to { top: 110%; } }
-
-        /* --- 5. HERO: WORLD BUILDER'S GATE --- */
-        .hero {
-            height: 100vh; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; position: relative;
-            z-index: 10;
-        }
-
-        .hero-glitch {
-            font-family: var(--font-display);
-            font-size: clamp(3rem, 18vw, 12rem);
-            font-weight: 900; line-height: 0.8;
-            letter-spacing: -15px; text-align: center;
-            mix-blend-mode: difference;
-        }
-
-        .hero-sub {
-            font-family: var(--font-mono);
-            font-size: 0.7rem; letter-spacing: 10px;
-            color: var(--gold); margin-top: 40px;
-            text-transform: uppercase;
-        }
-
-        /* --- 6. GAME CONCEPT GRID (RPG THEME) --- */
-        .game-grid {
-            display: grid; grid-template-columns: repeat(12, 1fr);
-            gap: 20px; padding: 100px 5%; z-index: 10; position: relative;
-        }
-
-        .module {
-            background: var(--glass-white);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 40px; position: relative; overflow: hidden;
-            transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1);
-            backdrop-filter: blur(10px);
-        }
-
-        .module:hover {
-            background: rgba(221, 161, 94, 0.05);
-            border-color: var(--gold);
-            transform: translateY(-10px) scale(1.02);
-        }
-
-        .span-8 { grid-column: span 8; }
-        .span-4 { grid-column: span 4; }
-        .span-6 { grid-column: span 6; }
-        .span-12 { grid-column: span 12; }
-
-        .module h3 {
-            font-family: var(--font-display); font-size: 1.2rem;
-            margin-bottom: 20px; color: var(--gold);
-        }
-
-        .module p {
-            font-weight: 300; line-height: 1.8; opacity: 0.7;
-        }
-
-        .stat-bar {
-            height: 2px; width: 0%; background: var(--gold);
-            margin-top: 20px; transition: 1.5s ease-out;
-        }
-
-        /* --- 7. TERMINAL SECTION --- */
-        .terminal {
-            background: #000; border: 1px solid #222;
-            padding: 20px; font-family: var(--font-mono);
-            font-size: 0.8rem; color: #444; height: 300px;
-            overflow-y: hidden; margin: 50px 0;
-        }
-
-        /* --- 8. CTA SECTION --- */
-        .cta-wrap {
-            height: 100vh; display: flex; flex-direction: column;
-            justify-content: center; align-items: center;
-        }
-
-        .mega-btn {
-            font-family: var(--font-display);
-            font-size: clamp(2rem, 10vw, 6rem);
-            color: #fff; text-decoration: none;
-            position: relative; transition: 0.5s;
-        }
-
-        .mega-btn:hover { color: var(--gold); letter-spacing: 20px; }
-
-        /* --- 9. MOBILE ADAPTATION --- */
-        @media (max-width: 800px) {
-            .span-4, .span-6, .span-8 { grid-column: span 12; }
-            .hero-glitch { letter-spacing: -5px; }
+        /* --- 5. CUSTOM GHOST CURSOR --- */
+        #cursor-ghost {
+            position: fixed; width: 10px; height: 10px; background: var(--ai-accent);
+            border-radius: 50%; pointer-events: none; z-index: 10001; mix-blend-mode: difference;
         }
     </style>
 </head>
 <body>
 
-    <div id="cursor-follower"></div>
-    <div id="cursor-dot"></div>
-    <div class="hud-overlay"></div>
-    <div class="scanline"></div>
-    <canvas id="void-engine"></canvas>
+    <div id="cursor-ghost"></div>
+    <canvas id="canvas-3d"></canvas>
 
-    <div class="main-layer">
-        
-        <section class="hero">
-            <div id="magnetic-target">
-                <p style="opacity: 0.3; text-align: center; letter-spacing: 5px; margin-bottom: 10px;">SYSTEMS_STABLE</p>
-                <h1 class="hero-glitch" id="text-reveal">NIKHIL<br>GOWTHAM</h1>
-                <p class="hero-sub">World Architect // IP Strategist // Game Theorist</p>
+    <div id="ai-orb-container">
+        <div id="chat-window">
+            <div class="chat-logs" id="logs">
+                <span style="color:var(--neon)">AI:</span> Oh, vachesava? I am Nikhil's digital ghost. Em kavali niku? Logic ah, Lore ah, leka natho kaburla?
             </div>
-        </section>
-
-        <section class="game-grid">
-            
-            <div class="module span-8">
-                <span style="font-size: 0.6rem; opacity: 0.4;">[001] NARRATIVE_ENGINE</span>
-                <h3>WORLD BUILDING LOGIC</h3>
-                <p>Creating persistent universes where every character action ripples through the lore. Using procedural storytelling to ensure no two experiences are identical. At Fametoonz, I bridge the gap between static IP and interactive legacy.</p>
-                <div class="stat-bar" style="width: 85%;"></div>
-            </div>
-
-            <div class="module span-4">
-                <span style="font-size: 0.6rem; opacity: 0.4;">[002] CORE_STATS</span>
-                <h3>MECHANICS</h3>
-                <p>Equilibrium-based combat systems, resource scarcity psychology, and reward loops that feel earned, not given.</p>
-            </div>
-
-            <div class="module span-12">
-                <div class="terminal" id="terminal-out">
-                    > Initializing God_Level_Portfolio...<br>
-                    > Fetching Lore Data from Fametoonz Archives...<br>
-                    > Rendering 3D Void Engine...<br>
-                    > System Check: 100% Operational.<br>
-                    > Welcome, Architect Nikhil.
-                </div>
-            </div>
-
-            <div class="module span-6">
-                <h3>CINEMATIC DIRECTION</h3>
-                <p>Frame-by-frame emotion control. Every shot is a sentence in the story's visual language.</p>
-            </div>
-
-            <div class="module span-6">
-                <h3>IP STRATEGY</h3>
-                <p>Transforming singular ideas into multi-platform ecosystems. Games, movies, and digital experiences synchronized into one vision.</p>
-            </div>
-
-        </section>
-
-        <section class="cta-wrap">
-            <p style="font-family: var(--font-mono); font-size: 0.7rem; margin-bottom: 20px; opacity: 0.5;">// TERMINATE_SESSION_AND_DOWNLOAD_INTEL</p>
-            <a href="https://drive.google.com/file/d/1AXxjCDntlv4S3Y3867NJdL44PVBWasLA/view?usp=sharing" target="_blank" class="mega-btn">RESUME_V1.0</a>
-        </section>
-
+            <input type="text" class="chat-input" id="userInput" placeholder="Type here (Telugu, Hindi, English...)" onkeypress="handleChat(event)">
+        </div>
+        <div id="ai-orb" onclick="toggleChat()"></div>
     </div>
 
+    <div id="music-panel">
+        <p style="font-size: 0.6rem; opacity: 0.5;">AMBIENT_SYSTEM_v1</p>
+        <button onclick="toggleMusic()" id="mBtn" style="background:none; border: 1px solid var(--neon); color:#fff; cursor:pointer; font-size: 0.7rem; padding: 5px 10px;">BOOT_AUDIO</button>
+    </div>
+
+    <div class="hud-main">
+        <h1 class="title">NIKHIL GOWTHAM</h1>
+        <p class="subtitle">WORLD_ARCHITECT</p>
+        <div style="margin-top: 40px; pointer-events: all;">        </div>
+    </div>
+
+    <audio id="bg-audio" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3"></audio>
+
     <script>
-        /* --- THE VOID ENGINE (STARFIELD 3D) --- */
-        const canvas = document.getElementById('void-engine');
+        const canvas = document.getElementById('canvas-3d');
         const ctx = canvas.getContext('2d');
         let stars = [];
-        let mouseX = 0, mouseY = 0;
+        let warpSpeed = 1;
 
+        // --- 1. THE VOID ENGINE ---
         function init() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            for(let i=0; i<800; i++) stars.push(new Star());
+            stars = [];
+            for(let i=0; i<600; i++) stars.push({
+                x: (Math.random() - 0.5) * canvas.width * 2,
+                y: (Math.random() - 0.5) * canvas.height * 2,
+                z: Math.random() * canvas.width
+            });
         }
 
-        class Star {
-            constructor() {
-                this.x = (Math.random() - 0.5) * 2000;
-                this.y = (Math.random() - 0.5) * 2000;
-                this.z = Math.random() * 2000;
-                this.px = 0; this.py = 0;
-            }
-            update() {
-                this.z -= 5;
-                if(this.z < 1) { this.z = 2000; this.x = (Math.random() - 0.5) * 2000; this.y = (Math.random() - 0.5) * 2000; }
-                let sx = (this.x / this.z) * canvas.width + canvas.width/2;
-                let sy = (this.y / this.z) * canvas.height + canvas.height/2;
-                this.sx = sx; this.sy = sy;
-            }
-            draw() {
-                let r = (1 - this.z / 2000) * 2;
-                ctx.fillStyle = `rgba(221, 161, 94, ${1 - this.z / 2000})`;
-                ctx.beginPath(); ctx.arc(this.sx, this.sy, r, 0, Math.PI*2); ctx.fill();
-            }
-        }
-
-        function animate() {
+        function draw() {
             ctx.fillStyle = '#000'; ctx.fillRect(0,0,canvas.width, canvas.height);
-            stars.forEach(s => { s.update(); s.draw(); });
-            requestAnimationFrame(animate);
+            stars.forEach(s => {
+                s.z -= warpSpeed;
+                if(s.z <= 0) s.z = canvas.width;
+                let sx = (s.x / s.z) * (canvas.width/2) + canvas.width/2;
+                let sy = (s.y / s.z) * (canvas.height/2) + canvas.height/2;
+                let size = (1 - s.z / canvas.width) * 2;
+                ctx.fillStyle = `rgba(221, 161, 94, ${1 - s.z / canvas.width})`;
+                ctx.beginPath(); ctx.arc(sx, sy, size, 0, Math.PI*2); ctx.fill();
+            });
+            requestAnimationFrame(draw);
         }
 
-        /* --- ADVANCED CURSOR & INTERACTION --- */
-        const follower = document.getElementById('cursor-follower');
-        const dot = document.getElementById('cursor-dot');
+        // --- 2. FUNNY MULTI-LINGUAL AI LOGIC ---
+        function toggleChat() {
+            const win = document.getElementById('chat-window');
+            win.style.display = win.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function handleChat(e) {
+            if(e.key === 'Enter') {
+                const input = document.getElementById('userInput');
+                const logs = document.getElementById('logs');
+                const val = input.value.toLowerCase();
+                
+                logs.innerHTML += `<br><span style="color:#fff">You:</span> ${input.value}`;
+                
+                let reply = "";
+                // Logic based on keywords
+                if(val.includes("evadu") || val.includes("who")) reply = "Nikhil is the boss. Nenu just ikkada server lo rent free ga untunna!";
+                else if(val.includes("joke")) reply = "Nee programming skills kante pedda joke em untundi mama? Just kidding!";
+                else if(val.includes("kaisa")) reply = "Ekdum jhakaas! Tum batao, resume dekhne aaye ho ya mera dimaag khane?";
+                else if(val.includes("music")) reply = "Music play chey mama, nenu dance veyali!";
+                else if(val.includes("telugu")) reply = "Telugu lo matladu mama, mana ooru mana bhaasha!";
+                else if(val.includes("love")) reply = "Premalo padaku mama, coding lo padu... logic aina migulthundi.";
+                else reply = "Idhi vinnappudu na logic circuit fuse aypoyindi. Inko saari try chey!";
+
+                setTimeout(() => {
+                    logs.innerHTML += `<br><span style="color:var(--neon)">AI:</span> ${reply}`;
+                    logs.scrollTop = logs.scrollHeight;
+                }, 600);
+                input.value = "";
+            }
+        }
+
+        // --- 3. AUDIO SYNC ---
+        const audio = document.getElementById('bg-audio');
+        function toggleMusic() {
+            if(audio.paused) { audio.play(); warpSpeed = 15; document.getElementById('mBtn').innerText = 'STOP_CHAOS'; }
+            else { audio.pause(); warpSpeed = 1; document.getElementById('mBtn').innerText = 'BOOT_AUDIO'; }
+        }
 
         window.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX; mouseY = e.clientY;
-            dot.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
-            follower.animate({ transform: `translate(${mouseX - 20}px, ${mouseY - 20}px)` }, { duration: 400, fill: "forwards" });
+            const ghost = document.getElementById('cursor-ghost');
+            ghost.style.left = e.clientX + 'px';
+            ghost.style.top = e.clientY + 'px';
         });
-
-        /* --- TILT ENGINE FOR MODULES --- */
-        document.querySelectorAll('.module').forEach(m => {
-            m.addEventListener('mousemove', (e) => {
-                const r = m.getBoundingClientRect();
-                const x = (e.clientX - r.left) / r.width - 0.5;
-                const y = (e.clientY - r.top) / r.height - 0.5;
-                m.style.transform = `perspective(1000px) rotateX(${y * 5}deg) rotateY(${x * -5}deg) translateY(-5px)`;
-            });
-            m.addEventListener('mouseleave', () => m.style.transform = `rotateX(0) rotateY(0) translateY(0)`);
-        });
-
-        /* --- TERMINAL AUTO-TYPER --- */
-        const term = document.getElementById('terminal-out');
-        const phrases = [
-            "> Fetching Game Lore...", "> Building Ecosystem...", "> Verifying Story Logic...", 
-            "> Stabilizing Multiverse...", "> Access Granted."
-        ];
-        let i = 0;
-        setInterval(() => {
-            if(i < phrases.length) {
-                term.innerHTML += `<br>${phrases[i]}`;
-                term.scrollTop = term.scrollHeight;
-                i++;
-            }
-        }, 2000);
 
         window.addEventListener('resize', init);
-        init(); animate();
+        init(); draw();
     </script>
 </body>
 </html>
