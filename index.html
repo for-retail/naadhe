@@ -1,1 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NIKHIL GOWTHAM | SYSTEM ARCHITECT</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,600&family=Montserrat:wght@300;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --paper: #f4f1ea; --ink: #1a1a1a; --accent: #8b7355; --card: #ffffff; }
+        body.night-mode { --paper: #05070a; --ink: #e0e0e0; --accent: #dda15e; --card: #12141d; }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
+        body { background: var(--paper); color: var(--ink); font-family: 'Cormorant Garamond', serif; overflow-x: hidden; transition: background 0.5s ease; }
 
+        #canvas-container { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+        #cursor { position: fixed; width: 15px; height: 15px; background: var(--accent); border-radius: 50%; z-index: 999999; pointer-events: none; transform: translate(-50%, -50%); mix-blend-mode: difference; }
+
+        #mode-switch { position: fixed; top: 30px; right: 30px; z-index: 10001; width: 50px; height: 50px; border-radius: 50%; cursor: pointer; background: var(--card); border: 2px solid var(--ink); display: flex; align-items: center; justify-content: center; box-shadow: 4px 4px 0px var(--ink); transition: 0.3s; }
+
+        .wrapper { position: relative; z-index: 10; width: 100%; }
+        section { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 80px 10%; text-align: center; }
+
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; width: 100%; max-width: 1000px; margin: 40px 0; }
+        .info-card { background: var(--card); padding: 40px; border: 1px solid rgba(0,0,0,0.1); text-align: left; box-shadow: 8px 8px 0px var(--ink); }
+
+        h1 { font-size: clamp(50px, 12vw, 120px); font-style: italic; line-height: 0.85; }
+        .tag { font-family: 'Montserrat'; font-size: 10px; letter-spacing: 5px; color: var(--accent); text-transform: uppercase; margin-bottom: 15px; display: block; }
+        
+        .btn { background: var(--card); border: 2px solid var(--ink); color: var(--ink); padding: 18px 40px; font-family: 'Montserrat'; font-size: 12px; font-weight: 600; letter-spacing: 2px; cursor: pointer; margin: 15px; transition: 0.4s; display: inline-flex; align-items: center; gap: 12px; box-shadow: 6px 6px 0px var(--ink); text-decoration: none; }
+
+        /* POPUPS */
+        #paper-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); width: 85vw; max-width: 600px; height: 70vh; background: var(--card); padding: 40px; z-index: 20000; opacity: 0; visibility: hidden; border: 1px solid var(--accent); overflow-y: auto; transition: 0.6s; }
+        #paper-modal.active { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
+        .vault-item { font-size: 28px; font-weight: 600; padding: 20px 10px; border-bottom: 1px solid rgba(0,0,0,0.1); cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; text-align: left; }
+        .vault-item:hover { color: var(--accent); padding-left: 20px; }
+
+        #deep-popup { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); width: 85vw; max-width: 750px; height: 75vh; background: var(--card); z-index: 30000; border: 2px solid var(--ink); box-shadow: 20px 20px 0px var(--accent); padding: 50px; display: none; overflow-y: auto; }
+
+        .resume-bridge { width: 100%; border-top: 1px dashed var(--accent); border-bottom: 1px dashed var(--accent); padding: 80px 0; margin: 40px 0; }
+    </style>
+</head>
+<body>
+
+    <div id="cursor"></div>
+    <div id="mode-switch" onclick="toggleMode()"><i class="fa-solid fa-moon" id="mode-icon"></i></div>
+    <div id="canvas-container"></div>
+
+    <div id="paper-modal">
+        <span onclick="closePaper()" style="position:absolute; top:20px; right:20px; cursor:pointer; font-size:25px;">&times;</span>
+        <div id="modal-inject"></div>
+    </div>
+
+    <div id="deep-popup">
+        <div style="text-align: right;"><span onclick="closeDeepPopup()" style="cursor: pointer; font-size: 40px;">&times;</span></div>
+        <h1 id="deep-title" style="font-size: 45px; font-style: italic; border-bottom: 4px solid var(--accent); padding-bottom: 15px; margin-bottom: 30px; text-transform: uppercase;">TITLE</h1>
+        <div id="deep-body" style="font-size: 22px; line-height: 1.7;"></div>
+    </div>
+
+    <div class="wrapper">
+        <section id="hero">
+            <span class="tag">System Architect</span>
+            <h1>Nikhil Gowtham</h1>
+            <p style="font-family:'Montserrat'; letter-spacing:4px; font-size:11px; margin-top:20px;">EXPLORE THE ARCHITECTURE</p>
+        </section>
+
+        <section id="identity">
+            <span class="tag">01. Protocols</span>
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3>Professional</h3>
+                    <p style="margin-top:15px; font-size:18px;">Fametoonz Hub: Managing 10k+ assets. Building production logic and episodic IP pipelines.</p>
+                </div>
+                <div class="info-card">
+                    <h3>Personal</h3>
+                    <p style="margin-top:15px; font-size:18px;">Based in Tirupati. Designing human-centric systems through narrative and technology.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="id-vault">
+            <span class="tag">02. The Repository</span>
+            <h2 style="font-size: 40px; font-style: italic; margin-bottom: 20px;">The Vault</h2>
+            <div style="display:flex; flex-wrap:wrap; justify-content:center; gap: 20px;">
+                <button class="btn" onclick="bringPaperToFront('stories')">STORY ARCHS</button>
+                <button class="btn" onclick="bringPaperToFront('games')">GAME BLUEPRINTS</button>
+            </div>
+        </section>
+
+        <section class="resume-bridge">
+            <span class="tag">03. Credentials</span>
+            <button class="btn" onclick="bringPaperToFront('resume')" style="background:var(--accent); color:white;">RETRIEVE RESUME.PDF</button>
+        </section>
+
+        <section id="contact">
+            <span class="tag">04. Initialize</span>
+            <h2 style="font-size:clamp(20px, 5vw, 40px); margin-bottom:30px;">matchalanikhilgowtham@gmail.com</h2>
+            <div style="display:flex; gap:15px; flex-wrap:wrap; justify-content:center;">
+                <a href="tel:6303594257" class="btn">VOICE</a>
+                <a href="https://wa.me/916303594257" class="btn">SIGNAL</a>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        const papers = [];
+        for(let i=0; i<45; i++) {
+            const paper = new THREE.Mesh(new THREE.PlaneGeometry(3, 4), new THREE.MeshPhongMaterial({ color: 0xffffff, side: THREE.DoubleSide, transparent: true, opacity: 0.6 }));
+            paper.position.set((Math.random()-0.5)*85, (Math.random()-0.5)*100, (Math.random()-0.5)*40);
+            paper.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, Math.random()*Math.PI);
+            paper.userData = { originalPos: paper.position.clone() };
+            scene.add(paper);
+            papers.push(paper);
+        }
+        scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+        camera.position.z = 50;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            papers.forEach(p => { if(!p.userData.isZoomed) { p.position.y -= 0.04; if(p.position.y < -55) p.position.y = 55; } });
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        function bringPaperToFront(type) {
+            const p = papers[0]; p.userData.isZoomed = true;
+            gsap.to(p.position, { x: 0, y: 0, z: 45, duration: 1 });
+
+            setTimeout(() => {
+                const inject = document.getElementById('modal-inject');
+                if(type === 'stories') {
+                    inject.innerHTML = `
+                        <div class="vault-item" onclick="openDeepNode('Book of Balance', 'Detailed story about universal balance.')">01. Book of Balance <i class="fa-solid fa-plus"></i></div>
+                        <div class="vault-item" onclick="openDeepNode('MaHi', 'The survival journey of MaHi.')">02. MaHi <i class="fa-solid fa-plus"></i></div>
+                        <div class="vault-item" onclick="openDeepNode('Bite', 'Digital combat narrative.')">03. Bite <i class="fa-solid fa-plus"></i></div>
+                    `;
+                } else if(type === 'resume') {
+                    inject.innerHTML = `<h3>RESUME</h3><p>Download your resume here.</p><br><button class="btn">DOWNLOAD</button>`;
+                }
+                document.getElementById('paper-modal').classList.add('active');
+            }, 500);
+        }
+
+        function openDeepNode(title, content) {
+            document.getElementById('deep-title').innerText = title;
+            document.getElementById('deep-body').innerHTML = `<p>${content}</p>`;
+            const dp = document.getElementById('deep-popup');
+            dp.style.display = 'block';
+            gsap.to(dp, { scale: 1, opacity: 1, duration: 0.4 });
+        }
+
+        function closeDeepPopup() { gsap.to("#deep-popup", { scale: 0, opacity: 0, duration: 0.3, onComplete: () => { document.getElementById('deep-popup').style.display = 'none'; } }); }
+
+        function closePaper() {
+            document.getElementById('paper-modal').classList.remove('active');
+            papers.forEach(p => { if(p.userData.isZoomed) { gsap.to(p.position, { x: p.userData.originalPos.x, y: p.userData.originalPos.y, z: 0, duration: 1 }); p.userData.isZoomed = false; } });
+        }
+
+        function toggleMode() { document.body.classList.toggle('night-mode'); }
+        document.addEventListener('mousemove', (e) => { gsap.to("#cursor", { x: e.clientX, y: e.clientY, duration: 0.1 }); });
+    </script>
+</body>
+</html>
