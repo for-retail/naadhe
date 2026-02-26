@@ -14,8 +14,6 @@
             --ink: #1a1a1a; 
             --accent: #8b7355; 
             --card: rgba(255, 255, 255, 0.7); 
-            --blue-paper: #cbd5e0;
-            --gold-paper: #e9d8a6;
         }
         body.night-mode { 
             --paper: #05070a; 
@@ -24,7 +22,61 @@
             --card: rgba(18, 20, 29, 0.8); 
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
+        /* --- ADD THIS AROUND LINE 15 --- */
+        #status-box {
+    position: fixed;
+    top: 30px;
+    left: 30px;
+    z-index: 10001;
+    background: rgba(var(--card-rgb), 0.4); /* Requires a RGB variable or just use rgba(255,255,255,0.4) */
+    backdrop-filter: blur(12px);
+    border-left: 3px solid var(--accent); /* Architect accent line */
+    padding: 8px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 10px 10px 30px rgba(0,0,0,0.05);
+    font-family: 'Montserrat';
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+}
+
+#current-activity {
+    font-family: 'Courier New', Courier, monospace; /* Terminal font */
+    color: var(--accent);
+    border-right: 2px solid var(--accent); /* Cursor blink */
+    white-space: nowrap;
+    overflow: hidden;
+    animation: blink-cursor 0.8s step-end infinite;
+}
+
+@keyframes blink-cursor {
+    from, to { border-color: transparent }
+    50% { border-color: var(--accent); }
+}
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(3.5); opacity: 0; }
+        }
+
+        /* Ensure mobile doesn't overlap with hero text */
+        @media (max-width: 768px) {
+            #status-box { top: 20px; left: 20px; font-size: 8px; padding: 6px 10px; }
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        
+        @media (pointer: fine) {
+            body, a, button, .btn, .mini-paper { cursor: none; }
+            #cursor { display: block; }
+        }
+        @media (pointer: coarse) {
+            #cursor { display: none; }
+            * { cursor: auto !important; }
+        }
+
         body { 
             background: var(--paper); 
             color: var(--ink); 
@@ -70,65 +122,94 @@
             backdrop-filter: blur(10px);
         }
 
-        h1 { font-size: clamp(50px, 12vw, 120px); font-style: italic; line-height: 0.85; }
-        .tag { 
-            font-family: 'Montserrat'; font-size: 10px; letter-spacing: 5px; 
-            color: var(--accent); text-transform: uppercase; margin-bottom: 15px; display: block; 
+        .paper-row {
+            display: flex; justify-content: center; gap: 25px;
+            flex-wrap: wrap; perspective: 1000px; margin-top: 20px; width: 100%;
         }
-        
+        .mini-paper {
+            width: 140px; height: 190px; background: #fff; border: 1px solid rgba(0,0,0,0.08);
+            cursor: pointer; position: relative; transition: 0.5s;
+            display: flex; flex-direction: column; justify-content: flex-end; padding: 15px;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+        }
+        .mini-paper::after {
+            content: ""; position: absolute; top: 20px; left: 15px; right: 15px; 
+            background: repeating-linear-gradient(to bottom, transparent, transparent 10px, rgba(0,0,0,0.05) 10px, rgba(0,0,0,0.05) 11px);
+            height: 100px;
+        }
+        .mini-paper span { font-family: 'Montserrat'; font-size: 11px; font-weight: 600; text-transform: uppercase; color: #1a1a1a; z-index: 2; }
+        .mini-paper:hover { transform: translateY(-15px) rotateX(10deg); box-shadow: 20px 30px 40px rgba(0,0,0,0.15); border-color: var(--accent); }
+        .mini-paper.blue-p { background: #e3e8f0; }
+
+        /* ADDED: OTHERS/LAB GRID */
+        .others-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            gap: 20px; width: 100%; max-width: 1200px; margin-top: 40px;
+        }
+        .lab-card {
+            background: var(--card); border: 1px solid var(--ink); padding: 20px;
+            text-align: left; box-shadow: 6px 6px 0px var(--ink);
+        }
+
+        #reading-page {
+            position: fixed; inset: 0; background: var(--paper); z-index: 50000;
+            display: none; flex-direction: column; padding: 60px 10%; overflow-y: auto; opacity: 0;
+        }
+
         .btn { 
             background: var(--card); border: 2px solid var(--ink); color: var(--ink); 
             padding: 18px 40px; font-family: 'Montserrat'; font-size: 12px; 
-            font-weight: 600; letter-spacing: 2px; cursor: pointer; margin: 15px; 
-            transition: 0.4s; display: inline-flex; align-items: center; gap: 12px; 
-            box-shadow: 6px 6px 0px var(--ink); text-decoration: none;
-            backdrop-filter: blur(5px);
+            font-weight: 600; letter-spacing: 2px; transition: 0.4s; 
+            display: inline-flex; align-items: center; gap: 12px; 
+            box-shadow: 6px 6px 0px var(--ink); text-decoration: none; backdrop-filter: blur(5px);
         }
         .btn:hover { transform: translate(-3px, -3px); box-shadow: 10px 10px 0px var(--accent); background: var(--ink); color: var(--paper); }
 
-        /* MODALS */
-        #paper-modal { 
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8); 
-            width: 85vw; max-width: 600px; height: 70vh; background: var(--card); 
-            padding: 40px; z-index: 20000; opacity: 0; visibility: hidden; 
-            border: 1px solid var(--accent); overflow-y: auto; transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            backdrop-filter: blur(20px);
-        }
-        #paper-modal.active { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
-        
-        .vault-item { 
-            font-size: 24px; font-weight: 600; padding: 25px 15px; 
-            border-bottom: 1px solid rgba(0,0,0,0.1); cursor: pointer; 
-            display: flex; justify-content: space-between; align-items: center; 
-            transition: 0.3s; text-align: left; 
-        }
-        .vault-item:hover { background: rgba(0,0,0,0.05); padding-left: 30px; color: var(--accent); }
-
-        #deep-popup { 
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); 
-            width: 90vw; max-width: 800px; height: 80vh; background: var(--card); 
-            z-index: 30000; border: 2px solid var(--ink); box-shadow: 20px 20px 0px var(--accent); 
-            padding: 50px; display: none; overflow-y: auto; backdrop-filter: blur(25px);
-        }
+        h1 { font-size: clamp(50px, 12vw, 120px); font-style: italic; line-height: 0.85; }
+        .tag { font-family: 'Montserrat'; font-size: 10px; letter-spacing: 5px; color: var(--accent); text-transform: uppercase; margin-bottom: 15px; display: block; }
 
         .resume-bridge { width: 100%; border-top: 1px dashed var(--accent); border-bottom: 1px dashed var(--accent); padding: 100px 0; margin: 40px 0; }
+    /* ... existing styles ... */
+
+        .resume-bridge { 
+            width: 100%; 
+            border-top: 1px dashed var(--accent); 
+            border-bottom: 1px dashed var(--accent); 
+            padding: 100px 0; margin: 40px 0; 
+        }
+
+       #contact h2 {
+    font-family: 'Montserrat', sans-serif;
+    /* Lowercase looks better with a lighter weight */
+    text-transform: lowercase !important; 
+    font-weight: 300; 
+    /* Spacing makes lowercase look high-end */
+    letter-spacing: 1px; 
+    font-size: clamp(18px, 3vw, 26px);
+    margin-bottom: 30px;
+    color: var(--ink);
+    opacity: 0.9;
+}
+
+    </style>
     </style>
 </head>
 <body>
+    
 
     <div id="cursor"></div>
     <div id="mode-switch" onclick="toggleMode()"><i class="fa-solid fa-moon" id="mode-icon"></i></div>
     <div id="canvas-container"></div>
 
-    <div id="paper-modal">
-        <span onclick="closePaper()" style="position:absolute; top:20px; right:20px; cursor:pointer; font-size:30px;">&times;</span>
-        <div id="modal-inject"></div>
-    </div>
-
-    <div id="deep-popup">
-        <div style="text-align: right;"><span onclick="closeDeepPopup()" style="cursor: pointer; font-size: 40px;">&times;</span></div>
-        <h1 id="deep-title" style="font-size: 40px; border-bottom: 3px solid var(--accent); padding-bottom: 15px; margin-bottom: 30px;">TITLE</h1>
-        <div id="deep-body" style="font-size: 20px; line-height: 1.8; font-family: 'Montserrat', sans-serif; font-weight: 300;"></div>
+    <div id="reading-page">
+        <div style="max-width: 800px; margin: 0 auto; width: 100%;">
+            <button class="btn" onclick="closeReadingPage()" style="margin-bottom: 50px;">
+                <i class="fa-solid fa-arrow-left"></i> BACK TO REPOSITORY
+            </button>
+            <h1 id="page-title" style="font-size: 60px; margin-bottom: 20px;">TITLE</h1>
+            <span id="page-tag" class="tag">Category</span>
+            <div id="page-content" style="margin-top: 50px; font-size: 24px; line-height: 1.6; font-family: 'Montserrat'; font-weight: 300;"></div>
+        </div>
     </div>
 
     <div class="wrapper">
@@ -154,76 +235,124 @@
 
         <section id="id-vault">
             <span class="tag">02. The Repository</span>
-            <h2 style="font-size: 50px; font-style: italic; margin-bottom: 30px;">The Vault</h2>
-            <div style="display:flex; flex-wrap:wrap; justify-content:center; gap: 20px;">
-                <button class="btn" onclick="bringPaperToFront('stories')"><i class="fa-solid fa-scroll"></i> STORY ARCHS</button>
-                <button class="btn" onclick="bringPaperToFront('games')"><i class="fa-solid fa-gamepad"></i> GAME BLUEPRINTS</button>
+            <h2 style="font-size: 50px; font-style: italic; margin-bottom: 10px;">The Vault</h2>
+            <p style="font-family:'Montserrat'; font-size:12px; margin-bottom:40px; opacity:0.8;">ORCHESTRATED NARRATIVES & SYSTEM LOGIC</p>
+
+            <h3 style="font-family:'Montserrat'; letter-spacing:3px; font-size:14px; margin-bottom:20px; text-transform:uppercase;">Story Archives</h3>
+            <div class="paper-row">
+                <div class="mini-paper" onclick="openFullPage('stories', 0)"><span>Book of Balance</span></div>
+                <div class="mini-paper" onclick="openFullPage('stories', 1)"><span>MaHi</span></div>
+                <div class="mini-paper" onclick="openFullPage('stories', 2)"><span>Bite</span></div>
+              
+            </div>
+
+            <h3 style="font-family:'Montserrat'; letter-spacing:3px; font-size:14px; margin:40px 0 20px; text-transform:uppercase;">Game Blueprints</h3>
+            <div class="paper-row">
+                <div class="mini-paper blue-p" onclick="openFullPage('games', 0)"><span>Genview</span></div>
+                <div class="mini-paper blue-p" onclick="openFullPage('games', 1)"><span>Genview V2</span></div>
             </div>
         </section>
 
         <section class="resume-bridge">
             <span class="tag">03. Credentials</span>
-            <button class="btn" onclick="bringPaperToFront('resume')" style="background:var(--accent); color:white; border:none;">RETRIEVE RESUME.PDF</button>
+            <button class="btn" onclick="openFullPage('resume', 0)" style="background:var(--accent); color:white; border:none;">
+                <i class="fa-solid fa-file-pdf"></i> RETRIEVE RESUME.PDF
+            </button>
         </section>
 
         <section id="contact">
-            <span class="tag">04. Initialize</span>
-            <h2 style="font-size:clamp(18px, 4vw, 35px); margin-bottom:30px; font-family:'Montserrat';">matchalanikhilgowtham@gmail.com</h2>
-            <div style="display:flex; gap:20px; flex-wrap:wrap; justify-content:center;">
-                <a href="tel:6303594257" class="btn">VOICE</a>
-                <a href="https://wa.me/916303594257" class="btn">Whatsapp</a>
-            </div>
-        </section>
+    <span class="tag">04. Get in touch</span>
+    <h2>matchalanikhilgowtham@gmail.com</h2>
+    <div style="display:flex; gap:20px; flex-wrap:wrap; justify-content:center;">
+        <a href="tel:6303594257" class="btn"><i class="fa-solid fa-phone"></i> VOICE</a>
+        <a href="https://wa.me/916303594257" class="btn"><i class="fa-brands fa-whatsapp"></i> WHATSAPP</a>
     </div>
+</section>
+
+        <section id="others">
+    <span class="tag">05. Modules</span>
+    <h2 style="font-size: 32px; font-style: italic; margin-bottom: 20px;">Prototypes & Logs</h2>
+    
+    <div class="others-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+        
+        <div class="lab-card" style="padding: 15px;">
+            <div style="display: flex; gap: 15px; align-items: flex-start;">
+                <div style="flex: 0 0 80px; height: 80px; border: 1px solid var(--ink); overflow: hidden;">
+                    <img src="https://i.ibb.co/d0MLFxs4/image.png" alt="Preview" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <div style="flex: 1;">
+                    <h3 style="font-size: 13px; margin: 0 0 5px 0; letter-spacing: 1px;">RETAIL_v1</h3>
+                    <p style="font-size: 11px; line-height: 1.3; margin: 0 0 10px 0; opacity: 0.8;">E-commerce logic for retail. Vibrant UI grid architecture.</p>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <a href="https://for-retail.github.io/clothing/" target="_blank" style="font-size: 10px; color: var(--accent); text-decoration: none; font-weight: bold;">[ VIEW_LIVE ]</a>
+                        <span style="font-family: 'Courier New'; font-size: 10px; color: #e63946; font-weight: bold;">! CONTACT_CLIENT</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="lab-card" style="padding: 15px; border-left: 3px solid var(--accent);">
+            <h3 style="font-size: 13px; margin: 0 0 5px 0; letter-spacing: 1px;">CONTENT CREATION IDEA</h3>
+            
+            <details style="cursor: pointer;">
+                <summary style="font-size: 11px; color: var(--accent); font-weight: bold; margin-bottom: 10px; list-style: none;">
+                    [ CLICK HERE TO VIEW FULL CONVO ]
+                </summary>
+                
+                <div style="font-family: 'Courier New', monospace; font-size: 10.5px; line-height: 1.4; color: var(--ink); background: rgba(0,0,0,0.03); padding: 10px; border-top: 1px dashed #ccc;">
+                    <div style="margin-bottom: 8px;"><strong>USER:</strong> I want to start a cafe in my city.</div>
+                    <div style="color: var(--accent); margin-bottom: 5px;"><strong>AI:</strong> Sure, that's a good idea! Need help?</div>
+                    <div><strong>USER:</strong> Yes, I want to do some marketing stuff.</div>
+                    <div style="color: var(--accent); margin-bottom: 5px;"><strong>AI:</strong> Contact [MARKETING_COMPANY]. They take care of posters for your social.</div>
+                    <div><strong>USER:</strong> What about video editing? I'm not good at that.</div>
+                    <div style="color: var(--accent); margin-bottom: 5px;"><strong>AI:</strong> The company will take care of it. They always come with new content ideas.</div>
+                    <div><strong>USER:</strong> Really? Can they take care of everything?</div>
+                    <div style="color: var(--accent); margin-bottom: 5px;"><strong>AI:</strong> Yes. From creating accounts to posters, content, recording, and reaching customers.</div>
+                    <div><strong>USER:</strong>how to contact them..?</div>
+                    <div style="margin-top: 10px; border-top: 1px solid #000; padding-top: 5px;">
+                        <strong>AI:</strong>simple these are they deails contact</div>
+                        <strong>PH</strong> +91 **********<br>
+                        <strong>INSTA</strong> @marketing_id<br>
+                        <strong>MAIL</strong> marketing@gmail.com
+                    </div>
+                </div>
+                <div class="lab-card" style="padding: 15px; border: 1px dashed var(--accent); opacity: 0.6; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; min-height: 120px;">
+    <div style="font-size: 18px; margin-bottom: 8px;">🏗️</div>
+    <h3 style="font-size: 11px; margin: 0; letter-spacing: 1px; text-transform: uppercase;">Under Construction</h3>
+    <p style="font-size: 10px; margin-top: 5px; font-style: italic;">More things will be uploaded soon...</p>
+</div>
+            </details>
+        </div>
+
+    </div>
+</section>
 
     <script>
-        // --- THREE.JS CONFIG ---
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.getElementById('canvas-container').appendChild(renderer.domElement);
 
+        const isMobile = window.innerWidth < 768;
         const papers = [];
-        const paperColors = [0xffffff, 0xcbd5e0, 0x8b7355, 0xe9d8a6]; // White, Blue, Brown, Gold
-
-        for(let i=0; i<55; i++) {
-            const color = paperColors[Math.floor(Math.random() * paperColors.length)];
+        const paperColors = [0xffffff, 0xcbd5e0, 0x8b7355, 0xe9d8a6]; 
+        for(let i=0; i<(isMobile ? 30 : 55); i++) {
             const geometry = new THREE.PlaneGeometry(3.5, 4.5);
-            const material = new THREE.MeshPhongMaterial({ 
-                color: color, 
-                side: THREE.DoubleSide, 
-                transparent: true, 
-                opacity: 0.7 
-            });
-            
-            const paper = new THREE.Mesh(geometry, material);
-            paper.position.set((Math.random()-0.5)*90, (Math.random()-0.5)*100, (Math.random()-0.5)*40);
-            paper.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, Math.random()*Math.PI);
-            
-            paper.userData = { 
-                originalPos: paper.position.clone(),
-                rotSpeed: (Math.random() - 0.5) * 0.01,
-                fallSpeed: 0.02 + Math.random() * 0.04
-            };
-            
-            scene.add(paper);
-            papers.push(paper);
+            const material = new THREE.MeshPhongMaterial({ color: paperColors[Math.floor(Math.random()*4)], side: THREE.DoubleSide, transparent: true, opacity: 0.7 });
+            const p = new THREE.Mesh(geometry, material);
+            p.position.set((Math.random()-0.5)*90, (Math.random()-0.5)*100, (Math.random()-0.5)*40);
+            p.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, Math.random()*Math.PI);
+            p.userData = { originalPos: p.position.clone(), rotSpeed: (Math.random()-0.5)*0.01, fallSpeed: 0.02+Math.random()*0.04 };
+            scene.add(p);
+            papers.push(p);
         }
+        scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+        camera.position.z = isMobile ? 65 : 50;
 
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
-        scene.add(ambientLight);
-        const pointLight = new THREE.PointLight(0xffffff, 0.5);
-        pointLight.position.set(10, 20, 10);
-        scene.add(pointLight);
-
-        camera.position.z = 50;
-
-        // --- INTERACTIVE MOUSE LOGIC ---
-        let mouseX = 0, mouseY = 0;
+        let mouseX = 0;
         document.addEventListener('mousemove', (e) => {
-            mouseX = (e.clientX - window.innerWidth / 2) / 100;
-            mouseY = (e.clientY - window.innerHeight / 2) / 100;
+            mouseX = (e.clientX - window.innerWidth/2)/100;
             gsap.to("#cursor", { x: e.clientX, y: e.clientY, duration: 0.1 });
         });
 
@@ -232,11 +361,7 @@
             papers.forEach(p => { 
                 if(!p.userData.isZoomed) { 
                     p.position.y -= p.userData.fallSpeed;
-                    p.rotation.z += p.userData.rotSpeed;
-                    
-                    // Mouse Parallax effect
                     p.position.x += (mouseX * 0.02);
-                    
                     if(p.position.y < -55) p.position.y = 55; 
                 } 
             });
@@ -244,80 +369,100 @@
         }
         animate();
 
-        // --- SCROLL REVEAL ---
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if(entry.isIntersecting) entry.target.classList.add('visible');
-            });
-        }, { threshold: 0.2 });
-        document.querySelectorAll('section').forEach(s => observer.observe(s));
+        function openFullPage(type, index) {
+            const content = {
+                'stories': [
+                    {
+    t: 'Book of Balance', 
+    tag: 'STORY ARCHIVE', 
+    c: `<strong style="text-decoration: underline;">CONCEPT</strong><br>A dying planet is restored by three gods sent to save the world itself, not the lives upon it. When a grief-stricken man questions their justice and rejects their answers, he rises against divine law to redefine balance.<br><br><strong style="text-decoration: underline;">THEMES</strong><br>Two saviors fight for the same world but believe it must be saved in opposite ways.<br>Justice versus Balance.<br>Compassion versus Order.<br><br><strong style="text-decoration: underline;">CHARACTERS</strong><br><br><div class="char" style="animation-delay: 1.0s"><strong>The Revolutionary:</strong> A man shaped by suffering, determined to challenge divine authority.</div><br><div class="char" style="animation-delay: 1.3s"><strong>The Anomaly:</strong> A boy whose unseen future drives him to protect the world he loves.</div><br><div class="char" style="animation-delay: 1.6s"><strong>The Divine Heir:</strong> Daughter of the hidden third god who defies divine rules to protect humanity.</div><br><div class="char" style="animation-delay: 1.9s"><strong>The Gods:</strong> Cosmic guardians bound to maintain planetary balance.</div><br><div class="char" style="animation-delay: 2.2s"><strong>The Evils:</strong> Ancient forces hidden beyond divine sight.</div><br><br><strong style="text-decoration: underline;">CENTRAL CONFLICT</strong><br>After losing the person he loved and receiving no help from the gods, the Revolutionary begins a war against divine authority, forcing the world to choose between justice and stability.<br><br><strong style="text-decoration: underline;">TITLE MEANING</strong><br>The Book of Balance is the sacred law that governs gods themselves.`
+},
+                    {
+    t: 'MaHi', 
+    tag: 'STORY ARCHIVE', 
+    c: `<strong style="text-decoration: underline;">CONCEPT</strong><br>A grieving father protects a young girl who received his daughter’s heart transplant after his own child died saving her. Years later, when the girl becomes a target due to her powerful father’s enemies, the man risks his life to keep her alive, believing a part of his daughter still lives within her.<br><br><strong style="text-decoration: underline;">CORE IDEA</strong><br>The life of one child continues inside another. A father who lost everything now guards the only remaining piece of his daughter’s existence, proving that love can outlive death through responsibility.<br><br><strong style="text-decoration: underline;">PRIMARY CHARACTERS</strong><br><br><div class="char" style="animation-delay: 1.0s"><strong>The Protagonist:</strong> A broken father driven by grief and a promise; he refuses to lose the life his daughter died to save.</div><br><div class="char" style="animation-delay: 1.3s"><strong>Hima:</strong> The transplant recipient. Innocent and unaware that her survival cost another life, she symbolizes the continuation of Maya.</div><br><div class="char" style="animation-delay: 1.6s"><strong>Maya:</strong> The deceased daughter. She exists through memories and visions that guide her father in moments of danger.</div><br><div class="char" style="animation-delay: 1.9s"><strong>Hima’s Father:</strong> A powerful, morally gray figure whose influence saved his daughter but now puts her in mortal danger.</div><br><div class="char" style="animation-delay: 2.2s"><strong>Maya’s Mother:</strong> The moral anchor who ensures the promise of protection is kept no matter the cost.</div><br><br><strong style="text-decoration: underline;">CONCEPT TONE</strong><br>An emotional action drama grounded in sacrifice, memory, and the belief that parenthood is defined by protection rather than just blood.`
+},
+                    {
+    t: 'Bite', 
+    tag: 'STORY ARCHIVE', 
+    c: `<strong style="text-decoration: underline;">CONCEPT</strong><br>A man attempts to break up a street dog fight and gets bitten. In a moment of impulsive rage, he bites the dog back. The incident lands both in separate hospitals, receiving treatment for each other’s bite wounds.<br><br><strong style="text-decoration: underline;">CORE HOOK</strong><br>A human and a dog begin to mirror each other’s behavior, crossing the line between instinct and reason. The situation spirals into an absurd rivalry as they blame each other for their mutual suffering.<br><br><strong style="text-decoration: underline;">SCENARIO BEATS</strong><br><br><div class="char" style="animation-delay: 1.0s"><strong>The Mirror Effect:</strong> Both characters are shown in parallel hospital beds, dealing with painful injections and restrictive cones.</div><br><div class="char" style="animation-delay: 1.3s"><strong>The Rivalry:</strong> What starts as a freak accident becomes a personal vendetta, with each side feeling like the true victim.</div><br><div class="char" style="animation-delay: 1.6s"><strong>Role Reversal:</strong> The man begins to adopt canine-like aggression, while the dog displays human-like spite and dramatic flair.</div><br><div class="char" style="animation-delay: 1.9s"><strong>Escalating Absurdity:</strong> The conflict grows from a street bite into a legendary, exaggerated standoff.</div><br><br><strong style="text-decoration: underline;">TONE & TYPE</strong><br>A short-form situational comedy grounded in physical humor and exaggerated dramatic parody. It explores the thin line where human logic meets animal instinct.`
+},
+                    
+                ],
+                'games': [
+                    {
+    t: 'Genview', 
+    tag: 'GAME BLUEPRINT', 
+    c: `<strong style="text-decoration: underline;">SYSTEM CORE</strong><br>First-generation procedural visualization system designed as a calm first-person world creation experience centered on presence, memory, and gradual transformation.<br><br><strong style="text-decoration: underline;">GENERATION LOGIC</strong><br>Players begin inside an empty environment and shape it through intention rather than instant control. The system interprets what the player wants, letting their imagination world evolve slowly and naturally.<br><br><strong style="text-decoration: underline;">WORLD PROTOCOLS</strong><br><br><div class="char" style="animation-delay: 1.0s"><strong>Inhabited Imagination:</strong> Players physically inhabit their imagined places, allowing them to walk through and explore worlds that were previously only mental images.</div><br><div class="char" style="animation-delay: 1.3s"><strong>Environmental Events:</strong> The world is dynamic; natural or supernatural disasters can occur, testing the world's resilience and changing the landscape.</div><br><div class="char" style="animation-delay: 1.6s"><strong>Multiplayer Synchronization:</strong> Designed for shared presence, allowing friends to enter the same imagination world to explore or build together in real-time.</div><br><div class="char" style="animation-delay: 1.9s"><strong>Persistent Evolution:</strong> Every action leaves a trace; the environment remembers what was done, creating a living history of the player's journey.</div><br><br><strong style="text-decoration: underline;">DESIGN PHILOSOPHY</strong><br>Genview is a reflective space where people return not to win, but to continue shaping something deeply personal. The only real boundary is the user's imagination.`
+},
+                    {
+    t: 'Genview V2', 
+    tag: 'GAME BLUEPRINT', 
+    c: `<strong style="text-decoration: underline;">EVOLUTIONARY CORE</strong><br>Building on the foundation of Genview, V2 introduces a high-stakes conflict layer where players must defend their imagined realms through tactical creativity.<br><br><strong style="text-decoration: underline;">IMAGINATION COMBAT (PvP)</strong><br>The system supports 1 vs 1, 1 vs Multiple, and Team vs Team scenarios. No weapons are provided by the system; instead, players must architect their own arsenal in real-time using AI-assisted construction.<br><br><strong style="text-decoration: underline;">AI WEAPON FORGE</strong><br><br><div class="char" style="animation-delay: 1.0s"><strong>Dynamic Manifestation:</strong> The AI interprets user intent to build weapons instantly. If you can think it, the system renders it.</div><br><div class="char" style="animation-delay: 1.3s"><strong>The Arsenal:</strong> Access to iconic logic-forms like <strong>Guns</strong>, <strong>Rasengan</strong>, <strong>Bankai</strong>, or <strong>kamehameha</strong>.</div><br><div class="char" style="animation-delay: 1.6s"><strong>Power Scaling:</strong> Weapon effectiveness depends entirely on the detail and clarity of the user's imagination.</div><br><div class="char" style="animation-delay: 1.9s"><strong>World Defense:</strong> Combat isn't just for sport; it's a protocol to protect the integrity of your personal world from invaders.</div><br><br><strong style="text-decoration: underline;">DESIGN PHILOSOPHY</strong><br>Genview V2 transforms imagination into power. It removes the boundary between "the creator" and "the warrior," proving that the strongest weapon in any system is the mind that built it.`
+},
+                ],
+                'resume': [
+                    {t: 'Curriculum Vitae', tag: 'Credentials', c: 'System Architect at Fametoonz Hub. Expert in asset orchestration and pipeline logic. Based in Tirupati.'}
+                ]
+            };
 
-        // --- UI FUNCTIONS ---
-        function bringPaperToFront(type) {
-            const p = papers[0]; 
+            const data = content[type][index];
+            document.getElementById('page-title').innerText = data.t;
+            document.getElementById('page-tag').innerText = data.tag;
+            document.getElementById('page-content').innerHTML = `<p>${data.c}</p>`;
+            
+            const p = papers[Math.floor(Math.random()*papers.length)];
             p.userData.isZoomed = true;
-            gsap.to(p.position, { x: 0, y: 0, z: 40, duration: 1.2, ease: "power4.out" });
-            gsap.to(p.rotation, { x: 0, y: 0, z: 0, duration: 1.2 });
 
-            setTimeout(() => {
-                const inject = document.getElementById('modal-inject');
-                if(type === 'stories') {
-                    inject.innerHTML = `
-                        <h2 style="margin-bottom:20px; font-style:italic;">Story Archives</h2>
-                        <div class="vault-item" onclick="openDeepNode('Book of Balance', 'The universe exists in a state of delicate equilibrium. This archive explores the architectural symmetry between chaos and order through a narrative lens.')">01. Book of Balance <i class="fa-solid fa-chevron-right"></i></div>
-                        <div class="vault-item" onclick="openDeepNode('MaHi', 'A survival journey set in a landscape where every decision alters the structural integrity of the protagonist\\'s world.')">02. MaHi <i class="fa-solid fa-chevron-right"></i></div>
-                        <div class="vault-item" onclick="openDeepNode('Bite', 'A digital combat narrative focusing on the breakdown of systemic communication in a high-stakes environment.')">03. Bite <i class="fa-solid fa-chevron-right"></i></div>
-                    `;
-                } else if(type === 'games') {
-                    inject.innerHTML = `
-                        <h2 style="margin-bottom:20px; font-style:italic;">Blueprints</h2>
-                        <div class="vault-item">System Logic v1.0 <i class="fa-solid fa-lock"></i></div>
-                        <div class="vault-item">Narrative Mechanics <i class="fa-solid fa-lock"></i></div>
-                    `;
-                } else if(type === 'resume') {
-                    inject.innerHTML = `
-                        <div style="text-align:center; padding:20px;">
-                            <i class="fa-solid fa-file-pdf" style="font-size:60px; color:var(--accent); margin-bottom:20px;"></i>
-                            <h3>NIKHIL_RESUME_2024.PDF</h3>
-                            <p style="margin:15px 0;">System Architect & Production Specialist</p>
-                            <button class="btn" style="background:var(--ink); color:white;">DOWNLOAD FILE</button>
-                        </div>
-                    `;
-                }
-                document.getElementById('paper-modal').classList.add('active');
-            }, 400);
+            // FIXED TIMING: Paper animation runs, THEN page fades in
+            gsap.to(p.position, { x: 0, y: 0, z: isMobile ? 60 : 45, duration: 1.2, ease: "power2.out" });
+            gsap.to(p.rotation, { x: 0, y: 0, z: 0, duration: 1 });
+
+            const page = document.getElementById('reading-page');
+            gsap.set(page, { display: 'flex' });
+            gsap.to(page, { opacity: 1, duration: 0.6, delay: 0.8 }); // Added delay so page waits for paper
         }
 
-        function openDeepNode(title, content) {
-            document.getElementById('deep-title').innerText = title;
-            document.getElementById('deep-body').innerHTML = `<p>${content}</p>`;
-            const dp = document.getElementById('deep-popup');
-            dp.style.display = 'block';
-            gsap.to(dp, { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(1.7)" });
-        }
-
-        function closeDeepPopup() { 
-            gsap.to("#deep-popup", { scale: 0, opacity: 0, duration: 0.3, onComplete: () => { 
-                document.getElementById('deep-popup').style.display = 'none'; 
-            }}); 
-        }
-
-        function closePaper() {
-            document.getElementById('paper-modal').classList.remove('active');
-            papers.forEach(p => { 
-                if(p.userData.isZoomed) { 
-                    gsap.to(p.position, { x: p.userData.originalPos.x, y: p.userData.originalPos.y, z: p.userData.originalPos.z, duration: 1 }); 
-                    p.userData.isZoomed = false; 
-                } 
-            });
+        function closeReadingPage() {
+            gsap.to("#reading-page", { opacity: 0, duration: 0.4, onComplete: () => {
+                document.getElementById('reading-page').style.display = 'none';
+                papers.forEach(p => { 
+                    if(p.userData.isZoomed) { 
+                        gsap.to(p.position, { x: p.userData.originalPos.x, y: p.userData.originalPos.y, z: p.userData.originalPos.z, duration: 1 }); 
+                        p.userData.isZoomed = false; 
+                    } 
+                });
+            }});
         }
 
         function toggleMode() { 
             document.body.classList.toggle('night-mode');
-            const icon = document.getElementById('mode-icon');
-            icon.classList.toggle('fa-moon');
-            icon.classList.toggle('fa-sun');
+            document.getElementById('mode-icon').classList.toggle('fa-sun');
+            function updateStatus(newText) {
+    const statusElement = document.getElementById('current-activity');
+    let i = 0;
+    statusElement.innerHTML = ''; // Clear current text
+    
+    function typeWriter() {
+        if (i < newText.length) {
+            statusElement.innerHTML += newText.charAt(i);
+            i++;
+            setTimeout(typeWriter, 50); // Speed of typing
         }
+    }
+    typeWriter();
+}
+
+// Example: Change status 5 seconds after the page loads
+setTimeout(() => {
+    updateStatus("PARSING SYSTEM ARCHIVES...");
+}, 5000);
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if(entry.isIntersecting) entry.target.classList.add('visible'); });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('section').forEach(s => observer.observe(s));
 
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
